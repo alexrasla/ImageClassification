@@ -41,8 +41,9 @@ def one_epoch(model, criterion, epoch, start_batch, optimizer, train):
 
         #get batch of features, labels
         features, labels = data
+        features, labels = features.to(Config.DEVICE), labels.to(Config.DEVICE)
         
-        output = model(features)
+        output = model(features.float())
         loss = criterion(output, labels.long())
         
 
@@ -97,7 +98,7 @@ def train():
 
     print('Device:', Config.DEVICE)
 
-    model = CNNImageClassification()
+    model = CNNImageClassification().to(Config.DEVICE)
 
     optimizer = optim.AdamW(model.parameters())
     loss_function = nn.CrossEntropyLoss()
@@ -105,7 +106,7 @@ def train():
     start_batch = 1
 
     if Config.LOAD_MODEL:
-        checkpoint = torch.load(os.path.join(Config.DRIVE_PATH, Config.PRETRAINED_CHECKPOINT_PATH),
+        checkpoint = torch.load(os.path.join(Config.DRIVE_PATH, Config.CHECKPOINT_PATH),
                                 map_location=Config.DEVICE)
 
         start_batch = checkpoint["batch"]
