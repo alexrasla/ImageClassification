@@ -35,17 +35,11 @@ def one_epoch(model, criterion, epoch, start_batch, optimizer, train):
     for index, data in enumerate(trainloader, 0):
     #for index in range(0, features.shape[0], Config.BATCH_SIZE):
         if train:
-            print(f"[Training Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Batch Number: {index}/5")
+            print(f"[Training Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Batch Number: {index}/{len(trainloader)}")
         else:
-            print(f"[Validation Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Validating: {index}/5")
+            print(f"[Validation Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Validating: {index}/{len(testloader)}")
 
         #get batch of features, labels
-        # curr_features = features[index:index+Config.BATCH_SIZE]
-        # curr_labels = labels[index:index+Config.BATCH_SIZE]
-        
-        # output = model(curr_features.reshape(Config.BATCH_SIZE, 3, Config.IMG_DIM, Config.IMG_DIM).float())
-        # loss = criterion(output, curr_labels.long())
-        
         features, labels = data
         
         output = model(features)
@@ -72,7 +66,7 @@ def one_epoch(model, criterion, epoch, start_batch, optimizer, train):
                     "model_state":model.state_dict(),
                     "optim_state":optimizer.state_dict()
                 }
-                torch.save(checkpoint, os.path.join(Config.DRIVE_PATH, Config.FINE_TUNED_CHECKPOINT_PATH))      
+                torch.save(checkpoint, os.path.join(Config.DRIVE_PATH, Config.CHECKPOINT_PATH))      
 
                 if os.path.exists(os.path.join(Config.DRIVE_PATH, 'train_loss_values.npy')):
                   train_loss_values = np.load(os.path.join(Config.DRIVE_PATH, 'train_loss_values.npy'))
