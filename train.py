@@ -30,18 +30,20 @@ def one_epoch(model, criterion, epoch, start_batch, optimizer, train):
     loss = 0
     running_loss = 0
     
-    features, labels = load_dataset(start_batch)
-    
-    print(features)
+    features, labels = load_dataset() #10000, 3072
 
-    for index in range(start_batch, 5):
+    for index in range(0, features.shape[0], Config.BATCH_SIZE):
         if train:
             print(f"[Training Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Batch Number: {index}/5")
         else:
             print(f"[Validation Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Validating: {index}/5")
-    
-        output = model(features)
-        loss = criterion(output, labels)
+
+        #get batch of features, labels
+        curr_features = features[index:index+Config.BATCH_SIZE]
+        curr_labels = labels[index:index+Config.BATCH_SIZE]
+       
+        output = model(curr_features.reshape(Config.BATCH_SIZE, 3, Config.IMG_DIM, Config.IMG_DIM).float())
+        loss = criterion(output, curr_labels.long())
 
         if train:
             optimizer.zero_grad()
@@ -55,7 +57,7 @@ def one_epoch(model, criterion, epoch, start_batch, optimizer, train):
         # update tensorboard and save model
         if update == 100:    # every 10 mini-batches
             running_avg = running_loss / 100
-            # graph = ''
+
             if train:
                 checkpoint = {
                     "epoch":epoch,
@@ -63,8 +65,7 @@ def one_epoch(model, criterion, epoch, start_batch, optimizer, train):
                     "model_state":model.state_dict(),
                     "optim_state":optimizer.state_dict()
                 }
-                torch.save(checkpoint, os.path.join(Config.DRIVE_PATH, Config.FINE_TUNED_CHECKPOINT_PATH))
-                
+                torch.save(checkpoint, os.path.join(Config.DRIVE_PATH, Config.FINE_TUNED_CHECKPOINT_PATH))      
 
                 if os.path.exists(os.path.join(Config.DRIVE_PATH, 'train_loss_values.npy')):
                   train_loss_values = np.load(os.path.join(Config.DRIVE_PATH, 'train_loss_values.npy'))
@@ -89,7 +90,6 @@ def one_epoch(model, criterion, epoch, start_batch, optimizer, train):
             update = 0
 
 def train():
-    
     # Initialize out dir
     if not os.path.exists(Config.OUT_DIR):
         os.mkdir(Config.OUT_DIR)

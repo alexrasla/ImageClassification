@@ -26,11 +26,11 @@ class CNNImageClassification(nn.Module):
             nn.MaxPool2d(2,2),
             
             nn.Flatten(),
-            nn.Linear(82944,1024),
+            nn.Linear(4096,1024),
             nn.ReLU(),
             nn.Linear(1024, 512),
             nn.ReLU(),
-            nn.Linear(512,6)
+            nn.Linear(512,10)
         )
     
     def forward(self, xb):
