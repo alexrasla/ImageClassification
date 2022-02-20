@@ -30,20 +30,27 @@ def one_epoch(model, criterion, epoch, start_batch, optimizer, train):
     loss = 0
     running_loss = 0
     
-    features, labels = load_dataset() #10000, 3072
+    trainloader, testloader = load_dataset() #10000, 3072
 
-    for index in range(0, features.shape[0], Config.BATCH_SIZE):
+    for index, data in enumerate(trainloader, 0):
+    #for index in range(0, features.shape[0], Config.BATCH_SIZE):
         if train:
             print(f"[Training Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Batch Number: {index}/5")
         else:
             print(f"[Validation Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Validating: {index}/5")
 
         #get batch of features, labels
-        curr_features = features[index:index+Config.BATCH_SIZE]
-        curr_labels = labels[index:index+Config.BATCH_SIZE]
-       
-        output = model(curr_features.reshape(Config.BATCH_SIZE, 3, Config.IMG_DIM, Config.IMG_DIM).float())
-        loss = criterion(output, curr_labels.long())
+        # curr_features = features[index:index+Config.BATCH_SIZE]
+        # curr_labels = labels[index:index+Config.BATCH_SIZE]
+        
+        # output = model(curr_features.reshape(Config.BATCH_SIZE, 3, Config.IMG_DIM, Config.IMG_DIM).float())
+        # loss = criterion(output, curr_labels.long())
+        
+        features, labels = data
+        
+        output = model(features)
+        loss = criterion(output, labels.long())
+        
 
         if train:
             optimizer.zero_grad()
