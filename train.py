@@ -31,7 +31,7 @@ def one_epoch(model, dataloader, criterion, epoch, start_batch, optimizer, train
     running_loss = 0
 
     for index, data in enumerate(dataloader, 0):
-    #for index in range(0, features.shape[0], Config.BATCH_SIZE):
+
         if train:
             print(f"[Training Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Batch Number: {index}/{len(dataloader)}")
         else:
@@ -46,10 +46,10 @@ def one_epoch(model, dataloader, criterion, epoch, start_batch, optimizer, train
         
 
         if train:
-            optimizer.zero_grad()
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             optimizer.step()
+            optimizer.zero_grad()
 
         update += 1
         running_loss += loss.item()
@@ -59,12 +59,12 @@ def one_epoch(model, dataloader, criterion, epoch, start_batch, optimizer, train
             running_avg = running_loss / 100
             print(f"[Loss] {running_avg}")
 
-            save(epoch, index, model, optimizer, running_avg)
+            save(train, epoch, index, model, optimizer, running_avg)
             
             running_loss = 0.0
             update = 0
 
-def save(epoch, index, model, optimizer, running_avg):
+def save(train, epoch, index, model, optimizer, running_avg):
     if train:
         checkpoint = {
             "epoch":epoch,
@@ -101,7 +101,7 @@ def train():
 
     model = CNNImageClassification().to(Config.DEVICE)
 
-    optimizer = optim.AdamW(model.parameters())
+    optimizer = optim.Adam(model.parameters(), lr=Config.LEARNING_RATE)
     loss_function = nn.CrossEntropyLoss()
     start_epoch = 0
     start_batch = 1

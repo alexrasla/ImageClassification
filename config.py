@@ -1,7 +1,7 @@
 import torch
 
 class Config():
-    BATCH_SIZE = 50
+    BATCH_SIZE = 100
     IMG_DIM = 32
     NUM_EPOCHS = 100
     LEARNING_RATE = 0.001
