@@ -7,7 +7,7 @@ from data import load_dataset
 from model import CNNImageClassification
 from config import Config
 
-def one_epoch(model, criterion, epoch, start_batch, optimizer, train):
+def one_epoch(model, dataloader, criterion, epoch, start_batch, optimizer, train):
     """
     Run the model through a single pass through the dataset defined by the dataloader
     model - The model being trained. Inherits torch.nn.Module
@@ -29,10 +29,8 @@ def one_epoch(model, criterion, epoch, start_batch, optimizer, train):
     update = 0
     loss = 0
     running_loss = 0
-    
-    trainloader, testloader = load_dataset() #10000, 3072
 
-    for index, data in enumerate(trainloader, 0):
+    for index, data in enumerate(dataloader, 0):
     #for index in range(0, features.shape[0], Config.BATCH_SIZE):
         if train:
             print(f"[Training Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Batch Number: {index}/{len(trainloader)}")
@@ -116,12 +114,14 @@ def train():
 
     pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print("Number Parameters:", pytorch_total_params)
+    
+    trainloader, testloader = load_dataset()
 
     for epoch in range(start_epoch, Config.NUM_EPOCHS):
         print(f"[Epoch] {epoch}/{Config.NUM_EPOCHS - 1}")
 
-        one_epoch(model, loss_function, epoch, start_batch, optimizer, train=True)
-        one_epoch(model, loss_function, epoch, start_batch, optimizer, train=False)
+        one_epoch(model, trainloader, loss_function, epoch, start_batch, optimizer, train=True)
+        one_epoch(model, testloader, loss_function, epoch, start_batch, optimizer, train=False)
     
 if __name__ == '__main__':
     train()
