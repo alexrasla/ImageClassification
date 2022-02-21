@@ -33,9 +33,9 @@ def one_epoch(model, dataloader, criterion, epoch, start_batch, optimizer, train
     for index, data in enumerate(dataloader, 0):
     #for index in range(0, features.shape[0], Config.BATCH_SIZE):
         if train:
-            print(f"[Training Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Batch Number: {index}/{len(trainloader)}")
+            print(f"[Training Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Batch Number: {index}/{len(dataloader)}")
         else:
-            print(f"[Validation Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Validating: {index}/{len(testloader)}")
+            print(f"[Validation Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Validating: {index}/{len(dataloader)}")
 
         #get batch of features, labels
         features, labels = data
