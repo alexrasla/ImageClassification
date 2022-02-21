@@ -7,23 +7,24 @@ from data import load_dataset
 from model import CNNImageClassification
 from config import Config
 
+#arg parser
+
 def eval():
     # Initialize out dir
     print('Device:', Config.DEVICE)
 
     model = CNNImageClassification().to(Config.DEVICE)
     model.eval()
-    
-    if Config.LOAD_MODEL:
-        checkpoint = torch.load(os.path.join('models', Config.CHECKPOINT_PATH),
-                                map_location=Config.DEVICE)
+   
+    checkpoint = torch.load(os.path.join('models', Config.CHECKPOINT_PATH),
+                            map_location=Config.DEVICE)
 
-        model.load_state_dict(checkpoint["model_state"])
+    model.load_state_dict(checkpoint["model_state"])
     
     trainloader, testloader = load_dataset()
     
-    y_pred = np.empty(Config.BATCH_SIZE * len(testloader))
-    y_true = np.empty(Config.BATCH_SIZE * len(testloader))
+    y_pred = np.empty((Config.BATCH_SIZE - 1) * len(testloader))
+    y_true = np.empty((Config.BATCH_SIZE - 1) * len(testloader))
     
     for index, data in enumerate(testloader, 0):
         with torch.no_grad():
