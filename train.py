@@ -57,37 +57,40 @@ def one_epoch(model, dataloader, criterion, epoch, start_batch, optimizer, train
         # update tensorboard and save model
         if update == 100:    # every 10 mini-batches
             running_avg = running_loss / 100
-
-            if train:
-                checkpoint = {
-                    "epoch":epoch,
-                    "batch":index,
-                    "model_state":model.state_dict(),
-                    "optim_state":optimizer.state_dict()
-                }
-                torch.save(checkpoint, os.path.join(Config.DRIVE_PATH, Config.CHECKPOINT_PATH))      
-
-                if os.path.exists(os.path.join(Config.DRIVE_PATH, 'train_loss_values.npy')):
-                  train_loss_values = np.load(os.path.join(Config.DRIVE_PATH, 'train_loss_values.npy'))
-                  train_loss_values = np.append(train_loss_values, running_avg)
-                  train_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'train_loss_values.npy'), train_loss_values)
-                else:
-                  train_loss_values = np.array([running_avg])
-                  train_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'train_loss_values.npy'), train_loss_values)
-            
-            else:
-                if os.path.exists(os.path.join(Config.DRIVE_PATH, 'val_loss_values.npy')):
-                  val_loss_values = np.load(os.path.join(Config.DRIVE_PATH, 'val_loss_values.npy'))
-                  val_loss_values = np.append(val_loss_values, running_avg)
-                  val_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'val_loss_values.npy'), val_loss_values)
-                else:
-                  val_loss_values = np.array([running_avg])
-                  val_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'val_loss_values.npy'), val_loss_values)
-            
             print(f"[Loss] {running_avg}")
-            running_loss = 0.0
 
+            save(epoch, index, model, optimizer, running_avg)
+            
+            running_loss = 0.0
             update = 0
+
+def save(epoch, index, model, optimizer, running_avg):
+    if train:
+        checkpoint = {
+            "epoch":epoch,
+            "batch":index,
+            "model_state":model.state_dict(),
+            "optim_state":optimizer.state_dict()
+        }
+        
+        torch.save(checkpoint, os.path.join(Config.DRIVE_PATH, Config.CHECKPOINT_PATH))      
+
+        if os.path.exists(os.path.join(Config.DRIVE_PATH, 'train_loss.npy')):
+            train_loss_values = np.load(os.path.join(Config.DRIVE_PATH, 'train_loss.npy'))
+            train_loss_values = np.append(train_loss_values, running_avg)
+            train_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'train_loss.npy'), train_loss_values)
+        else:
+            train_loss_values = np.array([running_avg])
+            train_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'train_loss.npy'), train_loss_values)
+
+    else:
+        if os.path.exists(os.path.join(Config.DRIVE_PATH, 'val_loss.npy')):
+            val_loss_values = np.load(os.path.join(Config.DRIVE_PATH, 'val_loss.npy'))
+            val_loss_values = np.append(val_loss_values, running_avg)
+            val_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'val_loss.npy'), val_loss_values)
+        else:
+            val_loss_values = np.array([running_avg])
+            val_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'val_loss.npy'), val_loss_values)
 
 def train():
     # Initialize out dir

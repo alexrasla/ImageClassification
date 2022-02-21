@@ -4,7 +4,7 @@ class Config():
     BATCH_SIZE = 50
     IMG_DIM = 32
     NUM_EPOCHS = 100
-    LEARNING_RATE = 0.01
+    LEARNING_RATE = 0.001
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     OUT_DIR = 'output'
     DATA_DIR = 'data'
