@@ -26,8 +26,8 @@ def eval(model_path):
     
     trainloader, testloader = load_dataset()
     
-    y_pred = np.empty((Config.BATCH_SIZE - 1) * len(testloader))
-    y_true = np.empty((Config.BATCH_SIZE - 1) * len(testloader))
+    y_pred = np.empty((Config.BATCH_SIZE) * len(testloader))
+    y_true = np.empty((Config.BATCH_SIZE) * len(testloader))
     
     for index, data in enumerate(testloader, 0):
         with torch.no_grad():
@@ -39,13 +39,13 @@ def eval(model_path):
             output = model(features.float())
             
             predicted = torch.nn.functional.softmax(output, dim=-1)
-            predicted = np.argmax(predicted.numpy(), axis=-1)
+            predicted = np.argmax(predicted.cpu().numpy(), axis=-1)
             
-            truth = labels.numpy()
+            truth = labels.cpu().numpy()
             
             y_pred[index*Config.BATCH_SIZE : (index+1)*Config.BATCH_SIZE] = predicted
             y_true[index*Config.BATCH_SIZE : (index+1)*Config.BATCH_SIZE] = truth
-            
+
             # print(y_pred)
             # print(y_true)
            
