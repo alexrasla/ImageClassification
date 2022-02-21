@@ -6,17 +6,20 @@ import os
 from data import load_dataset
 from model import CNNImageClassification
 from config import Config
+import argparse
 
-#arg parser
+parser = argparse.ArgumentParser()
+parser.add_argument("--model")
+args = parser.parse_args()
 
-def eval():
+def eval(model_path):
     # Initialize out dir
     print('Device:', Config.DEVICE)
 
     model = CNNImageClassification().to(Config.DEVICE)
     model.eval()
    
-    checkpoint = torch.load(os.path.join('models', Config.CHECKPOINT_PATH),
+    checkpoint = torch.load(model_path,
                             map_location=Config.DEVICE)
 
     model.load_state_dict(checkpoint["model_state"])
@@ -52,4 +55,5 @@ def eval():
    
     
 if __name__ == '__main__':
-    eval()
+    model_path = args.model
+    eval(model_path)
