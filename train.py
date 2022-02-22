@@ -33,9 +33,9 @@ def one_epoch(model, dataloader, criterion, epoch, optimizer, train):
 
         if index % 100 == 0:
             if train:
-                print(f"[Training Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Batch Number: {index}/{len(dataloader)}")
+                print(f"[Training] Epoch: {epoch}/{Config.NUM_EPOCHS - 1}, Batch Number: {index}/{len(dataloader)}")
             else:
-                print(f"[Validation Epoch] {epoch}/{Config.NUM_EPOCHS - 1}, Validating: {index}/{len(dataloader)}")
+                print(f"[Validating] Epoch: {epoch}/{Config.NUM_EPOCHS - 1}, Validating: {index}/{len(dataloader)}")
 
         #get batch of features, labels
         features, labels = data
@@ -64,11 +64,8 @@ def save(train_loss, val_loss, epoch, model, optimizer):
         "val_loss":val_loss
     }
     
-    if Config.DEVICE == 'cuda:0': 
-        torch.save(checkpoint, os.path.join(Config.DRIVE_PATH, Config.CHECKPOINT_PATH))
-    else:
-        torch.save(checkpoint, os.path.join(Config.OUT_DIR, Config.CHECKPOINT_PATH))
-
+    torch.save(checkpoint, os.path.join(Config.DRIVE_PATH, Config.CHECKPOINT_PATH))
+    
 def train():
     # Initialize out dir
     if not os.path.exists(Config.OUT_DIR):
