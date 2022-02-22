@@ -3,7 +3,7 @@ import torch
 class Config():
     BATCH_SIZE = 100
     IMG_DIM = 32
-    NUM_EPOCHS = 100
+    NUM_EPOCHS = 20
     LEARNING_RATE = 0.001
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     OUT_DIR = 'output'

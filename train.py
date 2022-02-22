@@ -7,7 +7,7 @@ from data import load_dataset
 from model import CNNImageClassification
 from config import Config
 
-def one_epoch(model, dataloader, criterion, epoch, start_batch, optimizer, train):
+def one_epoch(model, dataloader, criterion, epoch, optimizer, train):
     """
     Run the model through a single pass through the dataset defined by the dataloader
     model - The model being trained. Inherits torch.nn.Module
@@ -26,8 +26,7 @@ def one_epoch(model, dataloader, criterion, epoch, start_batch, optimizer, train
     else:
       model.eval()
     
-    update = 0
-    loss = 0
+    loss = []
     running_loss = 0
 
     for index, data in enumerate(dataloader, 0):
@@ -51,46 +50,22 @@ def one_epoch(model, dataloader, criterion, epoch, start_batch, optimizer, train
             optimizer.step()
             optimizer.zero_grad()
 
-        update += 1
         running_loss += loss.item()
 
-        # update tensorboard and save model
-        if update == 100:    # every 10 mini-batches
-            running_avg = running_loss / 100
-            print(f"[Loss] {running_avg}")
+    return running_loss / len(dataloader)
 
-            save(train, epoch, index, model, optimizer, running_avg)
-            
-            running_loss = 0.0
-            update = 0
-
-def save(train, epoch, index, model, optimizer, running_avg):
-    if train:
-        checkpoint = {
-            "epoch":epoch,
-            "batch":index,
-            "model_state":model.state_dict(),
-            "optim_state":optimizer.state_dict()
-        }
-        
+def save(train_loss, val_loss, epoch, model, optimizer):
+    checkpoint = {
+        "epoch":epoch,
+        "model_state":model.state_dict(),
+        "optim_state":optimizer.state_dict(),
+        "train_loss":train_loss,
+        "val_loss":val_loss
+    }
+    
+    if Config.DEVICE == 'cuda:0': 
         torch.save(checkpoint, os.path.join(Config.DRIVE_PATH, Config.CHECKPOINT_PATH))      
-
-        if os.path.exists(os.path.join(Config.DRIVE_PATH, 'train_loss.npy')):
-            train_loss_values = np.load(os.path.join(Config.DRIVE_PATH, 'train_loss.npy'))
-            train_loss_values = np.append(train_loss_values, running_avg)
-            train_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'train_loss.npy'), train_loss_values)
-        else:
-            train_loss_values = np.array([running_avg])
-            train_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'train_loss.npy'), train_loss_values)
-
-    else:
-        if os.path.exists(os.path.join(Config.DRIVE_PATH, 'val_loss.npy')):
-            val_loss_values = np.load(os.path.join(Config.DRIVE_PATH, 'val_loss.npy'))
-            val_loss_values = np.append(val_loss_values, running_avg)
-            val_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'val_loss.npy'), val_loss_values)
-        else:
-            val_loss_values = np.array([running_avg])
-            val_loss_values = np.save(os.path.join(Config.DRIVE_PATH, 'val_loss.npy'), val_loss_values)
+    torch.save(checkpoint, os.path.join(Config.OUT_DIR, Config.CHECKPOINT_PATH))
 
 def train():
     # Initialize out dir
@@ -104,13 +79,11 @@ def train():
     optimizer = optim.Adam(model.parameters(), lr=Config.LEARNING_RATE)
     loss_function = nn.CrossEntropyLoss()
     start_epoch = 0
-    start_batch = 1
 
     if Config.LOAD_MODEL:
         checkpoint = torch.load(os.path.join(Config.DRIVE_PATH, Config.CHECKPOINT_PATH),
                                 map_location=Config.DEVICE)
 
-        start_batch = checkpoint["batch"]
         start_epoch = checkpoint["epoch"]
         model.load_state_dict(checkpoint["model_state"])
         optimizer.load_state_dict(checkpoint["optim_state"])
@@ -121,10 +94,16 @@ def train():
     trainloader, testloader = load_dataset()
 
     for epoch in range(start_epoch, Config.NUM_EPOCHS):
+        print("-------------------------------------")
         print(f"[Epoch] {epoch}/{Config.NUM_EPOCHS - 1}")
 
-        one_epoch(model, trainloader, loss_function, epoch, start_batch, optimizer, train=True)
-        one_epoch(model, testloader, loss_function, epoch, start_batch, optimizer, train=False)
+        train_loss = one_epoch(model, trainloader, loss_function, epoch, optimizer, train=True)
+        val_loss = one_epoch(model, testloader, loss_function, epoch, optimizer, train=False)
+        
+        save(train_loss, val_loss, epoch, model, optimizer)
+        print(f"Train Loss:", train_loss)
+        print(f"Val Loss:  ", val_loss)
+
     
 if __name__ == '__main__':
     train()
