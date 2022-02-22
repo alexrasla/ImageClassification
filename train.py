@@ -26,7 +26,6 @@ def one_epoch(model, dataloader, criterion, epoch, optimizer, train):
     else:
       model.eval()
     
-    loss = []
     running_loss = 0
 
     for index, data in enumerate(dataloader, 0):
@@ -92,12 +91,17 @@ def train():
     
     trainloader, testloader = load_dataset()
 
+    train_loss = []
+    val_loss = []
     for epoch in range(start_epoch, Config.NUM_EPOCHS):
         print("-------------------------------------")
         print(f"[Epoch] {epoch}/{Config.NUM_EPOCHS - 1}")
 
-        train_loss = one_epoch(model, trainloader, loss_function, epoch, optimizer, train=True) 
-        val_loss = one_epoch(model, testloader, loss_function, epoch, optimizer, train=False)
+        train_loss_val = one_epoch(model, trainloader, loss_function, epoch, optimizer, train=True) 
+        val_loss_val = one_epoch(model, testloader, loss_function, epoch, optimizer, train=False)
+
+        train_loss.append(train_loss_val)
+        val_loss.append(val_loss_val)
         
         save(train_loss, val_loss, epoch, model, optimizer)
         print(f"Train Loss:", train_loss)
