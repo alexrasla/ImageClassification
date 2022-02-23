@@ -54,7 +54,7 @@ def one_epoch(model, dataloader, criterion, epoch, optimizer, train):
 
         running_loss += loss.item()
     end = timeit.default_timer()
-    runtime = start - end
+    runtime = end - start
     return running_loss / len(dataloader), runtime
 
 def save(train_loss, val_loss, train_runtime, val_runtime, epoch, model, optimizer):
@@ -114,8 +114,8 @@ def train():
         val_runtime.append(val_time)
         
         save(train_loss, val_loss, train_runtime, val_runtime, epoch, model, optimizer)
-        print(f"Train Loss:", train_loss, ", Runtime:", train_time)
-        print(f"Val Loss:  ", val_loss, ", Runtime:", val_time)
+        print(f"Train Loss:", train_loss_val, ", Runtime:", train_time)
+        print(f"Val Loss:  ", val_loss_val, ", Runtime:", val_time)
 
     
 if __name__ == '__main__':
