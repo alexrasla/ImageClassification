@@ -1,3 +1,4 @@
+import timeit
 import torch
 from torch import nn
 from torch import optim
@@ -21,6 +22,7 @@ def one_epoch(model, dataloader, criterion, epoch, optimizer, train):
             Otherwise, will run model over dataset without training and report loss
             (used for validation)
     """
+    start = timeit.default_timer()
     if train == True:
       model.train()
     else:
@@ -51,16 +53,19 @@ def one_epoch(model, dataloader, criterion, epoch, optimizer, train):
             optimizer.zero_grad()
 
         running_loss += loss.item()
+    end = timeit.default_timer()
+    runtime = start - end
+    return running_loss / len(dataloader), runtime
 
-    return running_loss / len(dataloader)
-
-def save(train_loss, val_loss, epoch, model, optimizer):
+def save(train_loss, val_loss, train_runtime, val_runtime, epoch, model, optimizer):
     checkpoint = {
         "epoch":epoch,
         "model_state":model.state_dict(),
         "optim_state":optimizer.state_dict(),
         "train_loss":train_loss,
-        "val_loss":val_loss
+        "val_loss":val_loss,
+        "train_runtime":train_runtime,
+        "val_runtime":val_runtime
     }
     
     torch.save(checkpoint, os.path.join(Config.DRIVE_PATH, Config.CHECKPOINT_PATH))
@@ -93,19 +98,24 @@ def train():
 
     train_loss = []
     val_loss = []
+    train_runtime = []
+    val_runtime = []
+    
     for epoch in range(start_epoch, Config.NUM_EPOCHS):
         print("-------------------------------------")
         print(f"[Epoch] {epoch}/{Config.NUM_EPOCHS - 1}")
 
-        train_loss_val = one_epoch(model, trainloader, loss_function, epoch, optimizer, train=True) 
-        val_loss_val = one_epoch(model, testloader, loss_function, epoch, optimizer, train=False)
+        train_loss_val, train_time = one_epoch(model, trainloader, loss_function, epoch, optimizer, train=True) 
+        val_loss_val, val_time = one_epoch(model, testloader, loss_function, epoch, optimizer, train=False)
 
         train_loss.append(train_loss_val)
+        train_runtime.append(train_time)
         val_loss.append(val_loss_val)
+        val_runtime.append(val_time)
         
-        save(train_loss, val_loss, epoch, model, optimizer)
-        print(f"Train Loss:", train_loss)
-        print(f"Val Loss:  ", val_loss)
+        save(train_loss, val_loss, train_runtime, val_runtime, epoch, model, optimizer)
+        print(f"Train Loss:", train_loss, ", Runtime:", train_time)
+        print(f"Val Loss:  ", val_loss, ", Runtime:", val_time)
 
     
 if __name__ == '__main__':
