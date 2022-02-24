@@ -46,12 +46,16 @@ def eval(model_path):
             y_pred[index*Config.BATCH_SIZE : (index+1)*Config.BATCH_SIZE] = predicted
             y_true[index*Config.BATCH_SIZE : (index+1)*Config.BATCH_SIZE] = truth
 
-            # print(y_pred)
-            # print(y_true)
-           
-            
-            # print(res, labels)
-    print(confusion_matrix(y_true, y_pred))
+    if not os.path.exists(Config.OUT_DIR):
+        os.mkdir(Config.OUT_DIR)
+    
+    res = confusion_matrix(y_true, y_pred)
+    np.save(res, Config.OUT_DIR)
+    
+    num_correct = np.trace(res)
+    num_images = np.sum(res)
+    
+    print("Overall Accuracy:", num_correct/num_images)
    
     
 if __name__ == '__main__':
