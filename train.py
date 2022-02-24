@@ -5,7 +5,7 @@ from torch import optim
 import os
 import numpy as np
 from data import load_dataset
-from model import CNNImageClassification
+from model import LargeImageClassification, BaslineImageClassification
 from config import Config
 
 def one_epoch(model, dataloader, criterion, epoch, optimizer, train):
@@ -77,7 +77,7 @@ def train():
 
     print('Device:', Config.DEVICE)
 
-    model = CNNImageClassification().to(Config.DEVICE)
+    model = LargeImageClassification().to(Config.DEVICE)
 
     optimizer = optim.Adam(model.parameters(), lr=Config.LEARNING_RATE)
     loss_function = nn.CrossEntropyLoss()
