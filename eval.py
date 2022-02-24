@@ -50,7 +50,7 @@ def eval(model_path):
         os.mkdir(Config.OUT_DIR)
     
     res = confusion_matrix(y_true, y_pred)
-    np.save(res, Config.OUT_DIR)
+    np.save(Config.OUT_DI, res)
     
     num_correct = np.trace(res)
     num_images = np.sum(res)
