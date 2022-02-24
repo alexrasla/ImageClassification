@@ -56,7 +56,7 @@ class LargeImageClassification(nn.Module):
     def forward(self, xb):
         return self.network(xb)
     
-class BaslineImageClassification(nn.Module):
+class BaselineImageClassification(nn.Module):
     def __init__(self):
         super().__init__()
         self.network = nn.Sequential(

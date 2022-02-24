@@ -4,7 +4,7 @@ import numpy as np
 from torch import nn
 import os
 from data import load_dataset
-from model import CNNImageClassification
+from model import BaselineImageClassification, LargeImageClassification
 from config import Config
 import argparse
 
@@ -16,7 +16,7 @@ def eval(model_path):
     # Initialize out dir
     print('Device:', Config.DEVICE)
 
-    model = CNNImageClassification().to(Config.DEVICE)
+    model = Config.MODEL.to(Config.DEVICE)
     model.eval()
    
     checkpoint = torch.load(model_path,

@@ -1,6 +1,8 @@
 import torch
+from model import LargeImageClassification, BaselineImageClassification
 
 class Config():
+    MODEL = BaselineImageClassification()
     BATCH_SIZE = 100
     IMG_DIM = 32
     NUM_EPOCHS = 20
