@@ -10,7 +10,17 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--dir")
 args = parser.parse_args()
 
-def plot_runtime(save_path):
+def plot_runtime(dir_path, save_path):
+    model_path = os.path.join(dir_path, 'checkpoint.pth')
+    
+    checkpoint = torch.load(model_path,
+                        map_location=Config.DEVICE)
+
+    train_loss = checkpoint["train_loss"]
+    val_loss = checkpoint["val_loss"]
+    train_runtime = checkpoint["train_runtime"]
+    val_runtime = checkpoint["val_runtime"]
+    
     fig, ax = plt.subplots(2)
     fig.subplots_adjust(left=0.1,
                         bottom=0.1, 
@@ -86,20 +96,11 @@ def plot_confusion_matrix(dir_path, save_path):
     
 if __name__ == '__main__':
     dir_path = args.dir
-    model_path = os.path.join(dir_path, 'checkpoint.pth')
-    
-    checkpoint = torch.load(model_path,
-                        map_location=Config.DEVICE)
-
-    train_loss = checkpoint["train_loss"]
-    val_loss = checkpoint["val_loss"]
-    train_runtime = checkpoint["train_runtime"]
-    val_runtime = checkpoint["val_runtime"]
     
     if not os.path.exists(os.path.join(dir_path, 'output')):
         os.mkdir(os.path.join(dir_path, 'output'))
     
     save_path = os.path.join(dir_path, 'output')
     
-    plot_runtime(save_path)
+    plot_runtime(dir_path, save_path)
     plot_confusion_matrix(dir_path, save_path)
