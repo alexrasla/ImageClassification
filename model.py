@@ -1,6 +1,4 @@
-import torch
 import torch.nn as nn
-from config import Config
 
 class LargeImageClassification(nn.Module):
     def __init__(self):
