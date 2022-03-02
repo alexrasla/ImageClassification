@@ -60,23 +60,38 @@ For this project, I used the CIFAR-10 \cite{Krizhevsky09learningmultiple} datase
 
 \section{Libraries}
 
-In this project, I used Pytorch to create my CNN and Torchvision to download and use the CIFAR-10 dataset.
- Within PyTorch, I used Conv2d layers to perform convolutions, ReLU layers to ensure all values are $>=$ 0, 
- and MaxPool2d layers to reduce the dimensions of the image and extract the most important features. I used the 
- Torchvision library to download the CIFAR-10 dataset and normalize the images rather than manually loading and 
+In this project, I used Pytorch to create my CNN and Torchvision to download and perform transformations on the CIFAR-10 dataset.
+ Within PyTorch, I used Conv2d layers to perform convolutions, ReLU layers to ensure all values are $>=$ 0, BatchNormalization as a 
+ regularization technique, and MaxPool2d layers to reduce the dimensions of the image and extract the most important features. I used the 
+ Torchvision library to download the CIFAR-10 dataset and transform the images rather than manually loading and 
  processing the data everytime into my project. Lastly, I used NumPy for basic array operations, matplotlib for
   plotting metrics, and sklearn to generate a confusion matrix.
 
+
+\section{Models}
+To perform and experiment with different image classification techniques, I first created a baseline model to ensure I could 
+achieve reasonable image classification. This model consisted of 3 layers of convolution followed by a “classification” layer. 
+Each of the convolutional layers had kernel sizes of 3, maxpooling sizes of 2, and consisted of the following sequential components: 
+Conv2d, ReLU, Conv2d, ReLU, and MaxPool2d; the final classification layer consisted of the Flatten, Linear, ReLU, Linear, ReLU, 
+Linear sequential components, with a final output vector size of 10. This model was trained with a learning rate of 0.001, a batch size of 100, 
+over 20 epochs, using the cross entropy loss function.
+
+Once I trained and produced reasonable results for a simple model, I also decided to train a larger model with the first and last 
+layers consisting of the convolutional layers described above, and 3 layers in between consisting of a sequential Conv2d, ReLU, Conv2d,
+ ReLU, Conv2d, ReLU, and MaxPool2d. This model was trained with the same hyperparameters as the baseline one in order to be able to compare 
+ them as accurately as possible.
+
+ 
 \section{Implementation Details}
 
 In order to train an image classification model using my program, first connect to the Google Colab GPU by 
-navigating to research.colab.com and clone the repository https://github.com/alexrasla/ImageClassification.git
+navigating to research.colab.com and cloning my repository, https://github.com/alexrasla/ImageClassification.git
 \end{Verbatim}
-Next, to edit the model and its hyperparameters, change the values in the config.py. Finally, execute 
+Next, to edit the model type and its hyperparameters, change the values in the config.py. Finally, execute 
 \begin{Verbatim}[fontsize=\small]
   !python3 ./ImageClassification/train.py
 \end{Verbatim}
- file to train the image classification model.
+ to train the image classification model specificied in the MODEL variable in the Config class.
 Once this model is trained, evaluation can be performed by executing: 
  \begin{Verbatim}[fontsize=\small]
   !python3 ./ImageClassification/eval.py 
@@ -94,20 +109,28 @@ confusion matrix, which is used to plot and analyze the results using
 Throughout this project, I trained two different models, experimented with a variety of different hyperparameters,
  and tested out different regularization and data augmentation techniques to achieve the most accurate model. In order 
  to compare the models, I used the most common evaluation techniques for image classification models: a confusion matrix. 
- This matrix increments the model’s output label (row) to the ground truth label (column) for each test image. Using this
+ This matrix increments the index of model's output label (row) and the ground truth label (column) in the confusion matrix for each test image. Using this
  method, perfect accuracy is represented by a diagonal matrix. However, more notable metrics using this matrix are the 
  overall accuracy, the commission of error, and the omission of error. The overall accuracy is percentage of correct 
  predictions, the commission of error is the percentage of images that are assigned to a certain class that don't belong 
- to it (overestimation), and the omission of error is the percentage of images that belong to one class but are classified 
+ to it (overestimation), and the omission of error is the percentage of images that belong to one class but are classified by the model 
  as other classes (underestimation). A table of the overall accuracy, training time per epoch, and validation time per epoch 
- for each model I experimented with is shown in Table \ref{tab:table1}. The training and validation loss for the best model 
- are shown in Figure \ref{fig:plots}, the normalized confusion matrix is shown in Figure \ref{fig:confusion}, and the error of commission
-  and omission for this model are shown in Figure \ref{fig:commission_omision}.
+ for each model I trained and experimented with is shown in Table \ref{tab:table1}. The training and validation loss for the best model (Model A)
+ are shown in Figure \ref{fig:plots}, its normalized confusion matrix is shown in Figure \ref{fig:confusion}, and its error of commission
+  and omission are shown in Figure \ref{fig:commission_omision}.
 
-Contrary to my initial assumptions, when trained with the same hyperparamters and data, the baseline model with 
- fewer layers and convolutions performed better on the overall accuracy when training on more epochs and with data 
- augmentation. After further research, I found that this is in fact expected the expected behavior in CNNs used for 
- image classification.
+Contrary to my initial hypothesis, the smaller model with fewer layers and convolutions had a better overall accuracy as compared to the larger model 
+ when trained with the same hyperparamters and data. This was a novel realization for myself because I always assumed larger models perform better. However, after reading 
+ various research papers, I found that this is in fact expected the expected behavior in CNNs used for image classification. 
+
+The best performing model I was able to train achieved an overall accuracy of 0.8912, a final training loss of 0.127, a final validation loss of 0.441 as shown in \ref{fig:plots}, and a total training time of 23 minutes and 33 seconds.
+  As we can see from the confusion matrix in Figure \ref{fig:confusion}, most of the model's classification accuracies lied above 0.89. From the commision and omision bar graph
+   \ref{fig:commission_omision}, we also notice that the two classes below this threshold, cat and dog, seemed to be most difficult task for the model, and were often hard to differentiate between themselves.
+   In fact, $9\%$ of the commision and ommision errors for each of these classes were caused by the other. Nevertheless, the model performed very well on the other classes, with half the classes
+   above $90\%$ accuracy.
+
+%This model converged continuously for the first 5-10 epochs, and the gradually converged for the remaining 20-25. I noticed that training for more epochs than 30 lead to
+  % model overfitting and a diverging validation loss.  
 
  \begin{table}
     \centering
@@ -131,17 +154,17 @@ Contrary to my initial assumptions, when trained with the same hyperparamters an
      \hline
     
     \end{tabular}
-    \caption{Model A: Baseline, Data Augmentation, Batch Normalization; Model B: Baseline, 30 epochs, Data Augmentation; Model C: Large, 30 epochs, Data Augmentation;
-    Model D: Baseline, 20 epochs, 3x3 Kernels; Model E: Large, 20 epochs, 3x3 Kernels; Model F: Baseline, 20 epochs, 7x7 Kernels;
-    Model G: Baseline, 40 epochs, 3x3 Kernels. This figure shows the overall accuracy from the confusion matrix 
-    for each trained model, along with its average training and validation time per epoch.}
+    \caption{Model A: Small, Data Augmentation, Batch Normalization; Model B: Small, 30 epochs, Data Augmentation; Model C: Large, 30 epochs, Data Augmentation;
+    Model D: Small, 20 epochs, 3x3 Kernels; Model E: Large, 20 epochs, 3x3 Kernels; Model F: Small, 20 epochs, 7x7 Kernels;
+    Model G: Small, 40 epochs, 3x3 Kernels. This figure shows the overall accuracy from the confusion matrix 
+    for each trained model, along with its average training and validation time in seconds per epoch.}
     \label{tab:table1}
 \end{table}
 
 \begin{figure}
   \centering
   \includegraphics[width=0.40\textwidth]{figures/plots.png}
-  \caption{The training and validation loss plots for Model A: Baseline, Data Augmentation, Batch Normalization}
+  \caption{The training and validation loss plots for Model A: Small, Data Augmentation, Batch Normalization}
   \label{fig:plots}
 \end{figure}
 
@@ -163,32 +186,32 @@ Contrary to my initial assumptions, when trained with the same hyperparamters an
 
 \section{Discussion}
 
-For my experimentation in this project, I implemented two different models --- one large and one small --- and 
- analyzed the effect of different kernel sizes, number of epochs, learning rate, and data augmentation. 
- In order to perform this experimentation, I first trained the baseline model that is described in the model section. 
+For my experimentation in this project, I implemented two different models (one large, one small),
+ analyzed the effect of different kernel sizes, number of epochs, learning rate, data augmentation, and regularization techniques. 
+ In order to perform this experimentation, I first trained the smaller model that is described in the model section. 
  This model gave me insight into how accurate a CNN can be without any hyperparameter tuning or modifications. 
  I trained this model for 20 epochs with a learning rate of 0.001 and a kernel size of 3x3. This produced an overall 
  accuracy of 0.7895 for the CIFAR-10 testset. 
 
-Once this baseline model generated reasonable results, I decided to test whether or not a larger model (Model E) with 
+Once this smaller model generated reasonable results, I decided to test whether or not a larger model (Model E) with 
  more layers and convolutions would increase the performance and accuracy. I trained the model with identical hyperparameters
-  in order to be able to most effectively compare the baseline and larger model. Contrary to my hypothesis, this did not perform
+  in order to be able to most effectively compare the smaller and larger model. Contrary to my hypothesis, this did not perform
    better than its simpler counterpart --- it achieved an overall accuracy of 0.7773. Furthermore, this model took twice as long
     to train and was 1GB in size (compared to 67MB) because of the number of parameters. 
 
 Because I noticed a slight decrease in performance with the larger model (and a huge increase in size), I decided to build upon and experiment
- with the baseline model. I first experimented with a kernel size of 7x7 with a padding of 3 so every pixel can be processed.
-  This model performed noticeably worse than the original baseline model with 3x3 kernels, decreasing the overall accuracy to 0.6612.
-   This is likely because the images in the CIFAR-12 dataset are only 32x32. Using a 7x7 kernel for convolutions for images this 
+ with the smaller model. I first experimented with a kernel size of 7x7 with a padding of 3 so every pixel can be processed.
+  This model performed noticeably worse than the smaller model with 3x3 kernels, decreasing the overall accuracy to 0.6612.
+   This is likely because the images in the CIFAR-10 dataset are only 32x32. Using a 7x7 kernel for convolutions for images this 
    small makes it hard for the model to extract important features and characteristics; the features that differentiate the images
     from each other and allow them to be classified correctly are smaller and more detailed. In other words, a smaller kernel size 
     can better specify and recognize a pixel's relation to a classification rather than a bigger kernel size which has a harder 
     time determining these details and relationships.
 
-Next, I experimented with the number of epochs and learning rate for the baseline model to see if tuning these hyperparameters 
- would improve performance. In order to test this, I trained the baseline model for 40 epochs with a learning rate of 0.0005.
+Next, I experimented with the number of epochs and learning rate for the smaller model to see if tuning these hyperparameters 
+ would improve performance. In order to test this, I trained the smaller model for 40 epochs with a learning rate of 0.0005.
   This would run the data over the entire dataset twice as much, but update the model's weights by half as much as the original 
-  model. Unfortunately, changing these parameters drastically decreased the performance again to an overall accuracy of 0.6556, 
+  model. Unfortunately, changing these parameters also drastically decreased the performance again to an overall accuracy of 0.6556, 
   but maintained a similar train and validation time per epoch. This is likely because the model overfitted the training data, 
   and thus performed poorly on the testing and validation data. This was proven by the diverging validation loss, as well as the 
   poor overall accuracy.
@@ -206,11 +229,11 @@ Finally, I decided to experiment with data augmentation. In order to perform dat
  to be modified in some way to diversify the dataset. To modify the images, I used torchvision's transform module to randomly flip 
  the images horizontally with p=0.5 and randomly crop the image. These transformations ensured the model was able to find more robust 
  features that represented a certain image classification rather than simply learning the dataset and overfitting the data. As a 
- result of this data augmentation, the overall accuracy of the baseline model improved by nearly 0.08, and the accuracy of the large 
+ result of this data augmentation, the overall accuracy of the smaller model improved by nearly 0.08, and the accuracy of the large 
  model improved nearly 0.05. This is a significant improvement from the initial models, which truly shows the impact that data 
  augmentation has on improving image classification.
 
-Building upon the baseline model with the combination of batch normalization and data augmentation, I was able to improve the
+Building upon the smaller model with the combination of batch normalization and data augmentation, I was able to improve the
  model's overall accuracy by 0.1, or $10\%$, to 0.8912.
 
 
