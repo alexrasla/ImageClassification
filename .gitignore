@@ -2,4 +2,8 @@
 /data
 /output
 /models
-plot.ipynb
+/report
+!/report/report.tex
+!/report/figures
+!/report/acl2020.bib
+!/report/report.pdf

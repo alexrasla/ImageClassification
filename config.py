@@ -1,5 +1,5 @@
 import torch
-from model import LargeImageClassification, BaselineImageClassification
+from model import LargeImageClassification, BaselineImageClassification, BestImageClassification
 
 class Config():
     MODEL = BaselineImageClassification()

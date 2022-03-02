@@ -1,4 +1,5 @@
 from matplotlib import pyplot as plt
+from sklearn.metrics import plot_confusion_matrix
 import torch
 from config import Config
 import os
@@ -21,7 +22,7 @@ def plot_runtime(dir_path, save_path):
     train_runtime = checkpoint["train_runtime"]
     val_runtime = checkpoint["val_runtime"]
     
-    fig, ax = plt.subplots(2)
+    fig, ax = plt.subplots()
     fig.subplots_adjust(left=0.1,
                         bottom=0.1, 
                         right=0.9, 
@@ -30,20 +31,21 @@ def plot_runtime(dir_path, save_path):
                         hspace=0.5)
 
 
-    ax[0].set_title("Loss Plot")
-    ax[0].set_ylabel("Loss Value")
-    ax[0].set_xlabel("Epochs")
-    ax[0].plot(train_loss, label="training")
-    ax[0].plot(val_loss, label="validation")
-    ax[0].legend()
+    ax.set_title("Loss Plot")
+    ax.set_ylabel("Loss Value")
+    ax.set_xlabel("Epochs")
+    ax.plot(train_loss, label="training")
+    ax.plot(val_loss, label="validation")
+    ax.legend()
 
-    ax[1].set_title("Runtime Plots")
-    ax[1].set_ylabel("Runtime (Seconds)")
-    ax[1].bar('Training', np.mean(train_runtime))
-    ax[1].bar('Validation', np.mean(val_runtime))
+    # ax[1].set_title("Runtime Plots")
+    # ax[1].set_ylabel("Runtime (Seconds)"
     plt.savefig(os.path.join(save_path, 'plots.png'))
+    
+    print('Training:', np.mean(train_runtime))
+    print('Validation:', np.mean(val_runtime))
 
-def plot_confusion_matrix(dir_path, save_path):
+def plot_commission_omission(dir_path, save_path):
     
     confusion_matrix = np.load(os.path.join(dir_path, 'confusion_matrix.npy'))
     train_classes, test_classes = get_label_names()
@@ -83,16 +85,40 @@ def plot_confusion_matrix(dir_path, save_path):
 
 
     axs[0].set_title("Commision Error")
-    axs[0].set_ylabel("Value")
+    axs[0].set_ylabel("Percentage")
     axs[0].bar(train_classes, commision_error)
     plt.setp(axs[0].get_xticklabels(), rotation=30, horizontalalignment='right')
 
 
     axs[1].set_title("Omission Error")
-    axs[1].set_ylabel("Value")
+    axs[1].set_ylabel("Percentage")
     axs[1].bar(train_classes, ommision_error)
     plt.setp(axs[1].get_xticklabels(), rotation=30, horizontalalignment='right')
     plt.savefig(os.path.join(save_path, 'commission_omision.png'))
+
+def plot_confusion_matrix(dir_path, save_path):
+    confusion_matrix = np.load(os.path.join(dir_path, 'confusion_matrix.npy'))
+    row_sums = confusion_matrix.sum(axis=1)
+    confusion_matrix = np.round(confusion_matrix / row_sums[:, np.newaxis], 2)
+    
+    train_classes, test_classes = get_label_names()
+    
+    fig, ax = plt.subplots()
+    
+    ax.set_title('Confusion Matrix')
+    ax.set_ylabel('Model Label')
+    ax.set_xlabel('True Label')
+    # ax.set_xticklabels(train_classes)
+    ax.matshow(confusion_matrix, cmap=plt.cm.Blues)
+
+    for i in range(10):
+        for j in range(10):
+            c = confusion_matrix[j,i]
+            ax.text(i, j, str(c), va='center', ha='center')
+    
+    # plt.matshow(confusion_matrix)
+    # plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
+    plt.savefig(os.path.join(save_path, 'confusion.png'))
     
 if __name__ == '__main__':
     dir_path = args.dir
@@ -103,4 +129,5 @@ if __name__ == '__main__':
     save_path = os.path.join(dir_path, 'output')
     
     plot_runtime(dir_path, save_path)
+    plot_commission_omission(dir_path, save_path)
     plot_confusion_matrix(dir_path, save_path)

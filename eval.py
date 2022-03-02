@@ -4,7 +4,7 @@ import numpy as np
 from torch import nn
 import os
 from data import load_dataset
-from model import BaselineImageClassification, LargeImageClassification
+from model import BaselineImageClassification, LargeImageClassification, BestImageClassification
 from config import Config
 import argparse
 

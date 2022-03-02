@@ -5,7 +5,7 @@ from torch import optim
 import os
 import numpy as np
 from data import load_dataset
-from model import LargeImageClassification, BaselineImageClassification
+from model import LargeImageClassification, BaselineImageClassification, BestImageClassification
 from config import Config
 
 def one_epoch(model, dataloader, criterion, epoch, optimizer, train):
