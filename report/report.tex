@@ -200,7 +200,7 @@ My last attempt at improving the model itself was to use regularization techniqu
  techniques can only improve model performance, given they are not overused. I suspect it failed to improve performance because dropping 
  convolution weights with a kernel size of 3 are already small enough that dropping additional neurons is ineffective and prevents it
   from learning. On the other hand, batch normalization after convolutional layers proved to increase the model's overall performance
-  to 0.8912. This is likely because standardizing the output of the convolutional layers prevents overfitting the model to the training set.
+  to by 0.03. This is likely because standardizing the output of the convolutional layers prevents overfitting the model to the training set.
 
 Finally, I decided to experiment with data augmentation. In order to perform data augmentation, the CIFAR-10 images I used needed
  to be modified in some way to diversify the dataset. To modify the images, I used torchvision's transform module to randomly flip 
@@ -211,7 +211,7 @@ Finally, I decided to experiment with data augmentation. In order to perform dat
  augmentation has on improving image classification.
 
 Building upon the baseline model with the combination of batch normalization and data augmentation, I was able to improve the
- model's overall accuracy by 0.1, or $10\%$.
+ model's overall accuracy by 0.1, or $10\%$, to 0.8912.
 
 
 \printbibliography
