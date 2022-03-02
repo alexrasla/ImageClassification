@@ -13,8 +13,7 @@ def one_epoch(model, dataloader, criterion, epoch, optimizer, train):
     Run the model through a single pass through the dataset defined by the dataloader
     model - The model being trained. Inherits torch.nn.Module
     dataloader - Encodes the dataset
-    writer - SummaryWriter for Tensorboard
-    loss_function - Pytorch loss function, like cross entropy
+    criterion - Pytorch loss function, like cross entropy
     epoch - Current epoch number, for printing status
     start_batch - (integer) Where to start the epoch (indexes the dataset)
     optimizer - Pytorch optimizer (like Adam)
