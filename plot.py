@@ -1,4 +1,4 @@
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, ticker
 from sklearn.metrics import plot_confusion_matrix
 import torch
 from config import Config
@@ -108,7 +108,9 @@ def plot_confusion_matrix(dir_path, save_path):
     ax.set_title('Confusion Matrix')
     ax.set_ylabel('Model Label')
     ax.set_xlabel('True Label')
-    # ax.set_xticklabels(train_classes)
+    ax.set_xticklabels(train_classes)
+    ax.set_yticklabels(train_classes)
+        
     ax.matshow(confusion_matrix, cmap=plt.cm.Blues)
 
     for i in range(10):
@@ -117,7 +119,10 @@ def plot_confusion_matrix(dir_path, save_path):
             ax.text(i, j, str(c), va='center', ha='center')
     
     # plt.matshow(confusion_matrix)
-    # plt.setp(ax.get_xticklabels(), rotation=30, horizontalalignment='right')
+    plt.xticks(np.arange(0, 10, 1))
+    plt.yticks(np.arange(0, 10, 1))
+    plt.setp(ax.get_xticklabels(), rotation=30, visible=True)
+    plt.setp(ax.get_yticklabels(), rotation=30, visible=True)
     plt.savefig(os.path.join(save_path, 'confusion.png'))
     
 if __name__ == '__main__':
