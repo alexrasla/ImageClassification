@@ -74,7 +74,7 @@ achieve reasonable image classification. This model consisted of 3 layers of con
 Each of the convolutional layers had kernel sizes of 3, maxpooling sizes of 2, and consisted of the following sequential components: 
 Conv2d, ReLU, Conv2d, ReLU, and MaxPool2d; the final classification layer consisted of the Flatten, Linear, ReLU, Linear, ReLU, 
 Linear sequential components, with a final output vector size of 10. This model was trained with a learning rate of 0.001, a batch size of 100, 
-over 20 epochs, using the cross entropy loss function.
+over 30 epochs, using the cross entropy loss function.
 
 Once I trained and produced reasonable results for a simple model, I also decided to train a larger model with the first and last 
 layers consisting of the convolutional layers described above, and 3 layers in between consisting of a sequential Conv2d, ReLU, Conv2d,
@@ -84,9 +84,8 @@ layers consisting of the convolutional layers described above, and 3 layers in b
  
 \section{Implementation Details}
 
-In order to train an image classification model using my program, first connect to the Google Colab GPU by 
-navigating to research.colab.com and cloning my repository, https://github.com/alexrasla/ImageClassification.git
-\end{Verbatim}
+In order to train an image classification model using my program, first connect to the \href{https://colab.research.google.com/}{Google Colab} GPU 
+and clone \href{https://github.com/alexrasla/ImageClassification.git}{my repository}.
 Next, to edit the model type and its hyperparameters, change the values in the config.py. Finally, execute 
 \begin{Verbatim}[fontsize=\small]
   !python3 ./ImageClassification/train.py
@@ -123,7 +122,7 @@ Contrary to my initial hypothesis, the smaller model with fewer layers and convo
  when trained with the same hyperparamters and data. This was a novel realization for myself because I always assumed larger models perform better. However, after reading 
  various research papers, I found that this is in fact expected the expected behavior in CNNs used for image classification. 
 
-The best performing model I was able to train achieved an overall accuracy of 0.8912, a final training loss of 0.127, a final validation loss of 0.441 as shown in \ref{fig:plots}, and a total training time of 23 minutes and 33 seconds.
+The best performing model I was able to train achieved an overall accuracy of 0.8912, a final training loss of 0.127, a final validation loss of 0.441 as shown in Figure \ref{fig:plots}, and a total training time of 23 minutes and 33 seconds.
   As we can see from the confusion matrix in Figure \ref{fig:confusion}, most of the model's classification accuracies lied above 0.89. From the commision and omision bar graph
    \ref{fig:commission_omision}, we also notice that the two classes below this threshold, cat and dog, seemed to be most difficult task for the model, and were often hard to differentiate between themselves.
    In fact, $9\%$ of the commision and ommision errors for each of these classes were caused by the other. Nevertheless, the model performed very well on the other classes, with half the classes
@@ -187,7 +186,7 @@ The best performing model I was able to train achieved an overall accuracy of 0.
 \section{Discussion}
 
 For my experimentation in this project, I implemented two different models (one large, one small),
- analyzed the effect of different kernel sizes, number of epochs, learning rate, data augmentation, and regularization techniques. 
+ and analyzed the effect of different kernel sizes, number of epochs, learning rate, data augmentation, and regularization techniques. 
  In order to perform this experimentation, I first trained the smaller model that is described in the model section. 
  This model gave me insight into how accurate a CNN can be without any hyperparameter tuning or modifications. 
  I trained this model for 20 epochs with a learning rate of 0.001 and a kernel size of 3x3. This produced an overall 
@@ -197,10 +196,10 @@ Once this smaller model generated reasonable results, I decided to test whether 
  more layers and convolutions would increase the performance and accuracy. I trained the model with identical hyperparameters
   in order to be able to most effectively compare the smaller and larger model. Contrary to my hypothesis, this did not perform
    better than its simpler counterpart --- it achieved an overall accuracy of 0.7773. Furthermore, this model took twice as long
-    to train and was 1GB in size (compared to 67MB) because of the number of parameters. 
+    to train and was 1GB in size (compared to 67MB for the small model) because of the number of trainable parameters. 
 
 Because I noticed a slight decrease in performance with the larger model (and a huge increase in size), I decided to build upon and experiment
- with the smaller model. I first experimented with a kernel size of 7x7 with a padding of 3 so every pixel can be processed.
+ with the smaller model. I first experimented with a kernel size of 7x7 (and a padding size of 3 so every pixel can be processed).
   This model performed noticeably worse than the smaller model with 3x3 kernels, decreasing the overall accuracy to 0.6612.
    This is likely because the images in the CIFAR-10 dataset are only 32x32. Using a 7x7 kernel for convolutions for images this 
    small makes it hard for the model to extract important features and characteristics; the features that differentiate the images
@@ -227,7 +226,7 @@ My last attempt at improving the model itself was to use regularization techniqu
 
 Finally, I decided to experiment with data augmentation. In order to perform data augmentation, the CIFAR-10 images I used needed
  to be modified in some way to diversify the dataset. To modify the images, I used torchvision's transform module to randomly flip 
- the images horizontally with p=0.5 and randomly crop the image. These transformations ensured the model was able to find more robust 
+ the images horizontally with $p=0.5$ and randomly crop the image. These transformations ensured the model was able to find more robust 
  features that represented a certain image classification rather than simply learning the dataset and overfitting the data. As a 
  result of this data augmentation, the overall accuracy of the smaller model improved by nearly 0.08, and the accuracy of the large 
  model improved nearly 0.05. This is a significant improvement from the initial models, which truly shows the impact that data 
