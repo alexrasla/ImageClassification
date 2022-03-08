@@ -110,10 +110,11 @@ Throughout this project, I trained two different models, experimented with a var
  to compare the models, I used the most common evaluation techniques for image classification models: a confusion matrix. 
  This matrix increments the index of model's output label (row) and the ground truth label (column) in the confusion matrix for each test image. Using this
  method, perfect accuracy is represented by a diagonal matrix. However, more notable metrics using this matrix are the 
- overall accuracy, the commission of error, and the omission of error. The overall accuracy is percentage of correct 
+ overall accuracy, the commission of error (false positive), and the omission of error. The overall accuracy is percentage of correct 
  predictions, the commission of error is the percentage of images that are assigned to a certain class that don't belong 
  to it (overestimation), and the omission of error is the percentage of images that belong to one class but are classified by the model 
- as other classes (underestimation). A table of the overall accuracy, training time per epoch, and validation time per epoch 
+ as other classes (underestimation). The equations below give a formula for the errors given a row or column $i$. $$Commission, i = \frac{\sum Col_i - Diagonal_i}{\sum Col_i}$$ 
+ $$Ommision, i = \frac{\sum Row_i - Diagonal_i}{\sum Row_i}$$ A table of the overall accuracy, training time per epoch, and validation time per epoch 
  for each model I trained and experimented with is shown in Table \ref{tab:table1}. The training and validation loss for the best model (Model A)
  are shown in Figure \ref{fig:plots}, its normalized confusion matrix is shown in Figure \ref{fig:confusion}, and its error of commission
   and omission are shown in Figure \ref{fig:commission_omision}.
@@ -124,12 +125,9 @@ Contrary to my initial hypothesis, the smaller model with fewer layers and convo
 
 The best performing model I was able to train achieved an overall accuracy of 0.8912, a final training loss of 0.127, a final validation loss of 0.441 as shown in Figure \ref{fig:plots}, and a total training time of 23 minutes and 33 seconds.
   As we can see from the confusion matrix in Figure \ref{fig:confusion}, most of the model's classification accuracies lied above 0.89. From the commision and omision bar graph
-   \ref{fig:commission_omision}, we also notice that the two classes below this threshold, cat and dog, seemed to be most difficult task for the model, and were often hard to differentiate between themselves.
-   In fact, $9\%$ of the commision and ommision errors for each of these classes were caused by the other. Nevertheless, the model performed very well on the other classes, with half the classes
+   in Figure \ref{fig:commission_omision}, we also notice that the two classes below this threshold, cat and dog, seemed to be most difficult task for the model, and were often hard to differentiate between themselves.
+   In fact, $9\%$ of the ommision errors for each of these classes were caused by the other. Nevertheless, the model performed very well on the other classes, with half the classes
    above $90\%$ accuracy.
-
-%This model converged continuously for the first 5-10 epochs, and the gradually converged for the remaining 20-25. I noticed that training for more epochs than 30 lead to
-  % model overfitting and a diverging validation loss.  
 
  \begin{table}
     \centering
