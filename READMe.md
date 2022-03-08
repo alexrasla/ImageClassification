@@ -17,9 +17,18 @@ Once this model is trained, evaluation can be performed by executing:
 ``` 
 !python3 eval.py --model [path to model]
 ``` 
+Example:
+```
+!python3 ./ImageClassification/eval.py --model ./drive/MyDrive/checkpoint.pth
+```
                  
 The evaluation is performed on the CIFAR-10 testset, and the program generates and saves a 
 confusion matrix, which is used to plot and analyze the results using 
 ```
 !python3 plot.py  --dir [path to model directory]
+``` 
+
+Example:
+```
+!python3 plot.py  --dir ./models/batch_norm
 ``` 
