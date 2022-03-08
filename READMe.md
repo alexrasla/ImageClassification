@@ -30,5 +30,5 @@ confusion matrix, which is used to plot and analyze the results using
 
 Example:
 ```
-!python3 plot.py  --dir ./models/batch_norm
+!python3 plot.py  --dir ./models/best
 ``` 
