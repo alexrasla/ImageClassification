@@ -147,15 +147,16 @@ The best performing model I was able to train achieved an overall accuracy of 0.
      \hline
      Model E & 0.7773 & 98.42 & 5.03 \\ 
      \hline
-     Model F & 0.6612 & 83.38 & 5.17 \\ 
+     Model F & 0.7549 & 45.13 & 3.35 \\ 
      \hline
-     Model G & 0.6556 & 45.13 & 3.35 \\ 
+     Model G & 0.6612 & 83.38 & 5.17 \\ 
      \hline
+     
     
     \end{tabular}
     \caption{Model A: Small, Data Augmentation, Batch Normalization; Model B: Small, 30 epochs, Data Augmentation; Model C: Large, 30 epochs, Data Augmentation;
-    Model D: Small, 20 epochs, 3x3 Kernels; Model E: Large, 20 epochs, 3x3 Kernels; Model F: Small, 20 epochs, 7x7 Kernels;
-    Model G: Small, 40 epochs, 3x3 Kernels. This figure shows the overall accuracy from the confusion matrix 
+    Model D: Small, 20 epochs, 3x3 Kernels; Model E: Large, 20 epochs, 3x3 Kernels; 
+    Model F: Small, 40 epochs, 3x3 Kernels; Model G: Small, 20 epochs, 7x7 Kernels;. This figure shows the overall accuracy from the confusion matrix 
     for each trained model, along with its average training and validation time in seconds per epoch.}
     \label{tab:table1}
 \end{table}
@@ -210,10 +211,10 @@ Because I noticed a slight decrease in performance with the larger model (and a 
 Next, I experimented with the number of epochs and learning rate for the smaller model to see if tuning these hyperparameters 
  would improve performance. In order to test this, I trained the smaller model for 40 epochs with a learning rate of 0.0005.
   This would run the data over the entire dataset twice as much, but update the model's weights by half as much as the original 
-  model. Unfortunately, changing these parameters also drastically decreased the performance again to an overall accuracy of 0.6556, 
+  model. Unfortunately, changing these parameters also decreased the performance again to an overall accuracy of 0.7549, 
   but maintained a similar train and validation time per epoch. This is likely because the model overfitted the training data, 
   and thus performed poorly on the testing and validation data. This was proven by the diverging validation loss, as well as the 
-  poor overall accuracy.
+  poorer overall accuracy.
 
 My last attempt at improving the model itself was to use regularization techniques since the dataset is relatively small and
  they are proven to improve many types of models for many types of applications. I decided to focus on experimenting with dropout 
